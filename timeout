@@ -1,0 +1,14 @@
+var httpClient = new HttpClient
+{
+    Timeout = TimeSpan.FromMinutes(5)
+};
+
+var authProvider = new DelegateAuthenticationProvider(requestMessage =>
+{
+    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", graphToken);
+    return Task.FromResult(0);
+});
+
+var httpProvider = new HttpProvider(httpClient, false); // O segundo parâmetro indica se o Graph deve fazer dispose do client
+
+var graphClient = new GraphServiceClient(authProvider, httpProvider);
