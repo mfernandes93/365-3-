@@ -1,0 +1,29 @@
+var page = await graphClient
+    .Users[MailBox]
+    .MailFolders["inbox"]
+    .Messages
+    .Request()
+    .Top(5)
+    .OrderBy("receivedDateTime desc")
+    .Select("id,subject,receivedDateTime") // Evita sobrecarga
+    .GetAsync(cts.Token);
+
+while (page != null)
+{
+    foreach (var message in page.CurrentPage)
+    {
+        var attachments = await graphClient
+            .Users[MailBox]
+            .Messages[message.Id]
+            .Attachments
+            .Request()
+            .GetAsync(cts.Token);
+
+        // Processa anexos aqui
+    }
+
+    if (page.NextPageRequest != null)
+        page = await page.NextPageRequest.GetAsync(cts.Token);
+    else
+        page = null;
+}
